@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../../acorn-io/acorn/.idea/acorn.iml" filepath="$PROJECT_DIR$/../../acorn-io/acorn/.idea/acorn.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../acorn-io/baaah/.idea/baaah.iml" filepath="$PROJECT_DIR$/../../acorn-io/baaah/.idea/baaah.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/hf-provisioner-digitalocean.iml" filepath="$PROJECT_DIR$/.idea/hf-provisioner-digitalocean.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../packer-operator/.idea/packer-operator.iml" filepath="$PROJECT_DIR$/../packer-operator/.idea/packer-operator.iml" />
+    </modules>
+  </component>
+</project>
