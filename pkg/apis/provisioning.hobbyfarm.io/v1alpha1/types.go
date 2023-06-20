@@ -2,6 +2,7 @@ package v1alpha1
 
 import (
 	"encoding/json"
+
 	"github.com/digitalocean/godo"
 	"github.com/rancher/wrangler/pkg/condition"
 	"github.com/rancher/wrangler/pkg/genericcondition"
@@ -133,5 +134,5 @@ type KeyList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata"`
 
-	Items []Key
+	Items []Key `json:"items,omitempty"`
 }
