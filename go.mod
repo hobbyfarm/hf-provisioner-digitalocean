@@ -3,6 +3,7 @@ module github.com/ebauman/hf-provisioner-digitalocean
 go 1.20
 
 replace (
+	github.com/ebauman/crder => github.com/ebauman/crder v0.2.0-rc0
 	k8s.io/api => k8s.io/api v0.24.0
 	k8s.io/apimachinery => k8s.io/apimachinery v0.24.0
 	k8s.io/client-go => k8s.io/client-go v0.24.0
@@ -28,6 +29,8 @@ require (
 require (
 	github.com/acorn-io/baaah v0.0.0-20230428031609-d553bca0d3d8
 	github.com/sirupsen/logrus v1.9.2
+	k8s.io/apiextensions-apiserver v0.27.2
+	k8s.io/utils v0.0.0-20230209194617-a36077c30491
 )
 
 require (
@@ -79,11 +82,9 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	k8s.io/apiextensions-apiserver v0.27.2 // indirect
 	k8s.io/gengo v0.0.0-20220902162205-c0856e24416d // indirect
 	k8s.io/klog v1.0.0 // indirect
 	k8s.io/klog/v2 v2.90.1 // indirect
-	k8s.io/utils v0.0.0-20230209194617-a36077c30491 // indirect
 	sigs.k8s.io/controller-tools v0.12.0 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.2.3 // indirect

@@ -51,6 +51,8 @@ func SecretHandler(req router.Request, resp router.Response) error {
 			return err
 		}
 
+		secret.Data = map[string][]byte{}
+
 		secret.Data["public_key"] = []byte(public)
 		secret.Data["private_key"] = []byte(private)
 	} else if err != nil {

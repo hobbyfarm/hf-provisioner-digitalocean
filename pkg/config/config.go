@@ -2,10 +2,25 @@ package config
 
 import (
 	"github.com/acorn-io/baaah/pkg/router"
+	"github.com/ebauman/hf-provisioner-digitalocean/pkg/namespace"
 	v1 "github.com/hobbyfarm/gargantua/pkg/apis/hobbyfarm.io/v1"
 	"github.com/sirupsen/logrus"
 	kclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
+
+func ResolveConfigItemName(vmName string, req router.Request, item string) string {
+	machine := &v1.VirtualMachine{}
+	err := req.Client.Get(req.Ctx, kclient.ObjectKey{
+		Namespace: namespace.Resolve(),
+		Name:      vmName,
+	}, machine)
+	if err != nil {
+		logrus.Errorf("error while looking up machine with name %s: %s", vmName, err.Error())
+		return "" // nothing more we can do
+	}
+
+	return ResolveConfigItem(machine, req, item)
+}
 
 func ResolveConfigItem(obj *v1.VirtualMachine, req router.Request, item string) string {
 	// go from most to least specific

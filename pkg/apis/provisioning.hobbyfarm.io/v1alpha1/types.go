@@ -1,20 +1,24 @@
 package v1alpha1
 
 import (
-	"encoding/json"
-
 	"github.com/digitalocean/godo"
+	"github.com/ebauman/hf-provisioner-digitalocean/pkg/retries"
 	"github.com/rancher/wrangler/pkg/condition"
 	"github.com/rancher/wrangler/pkg/genericcondition"
+	v1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 var (
-	ConditionDropletExists = condition.Cond("DropletExists")
-	ConditionDropletReady  = condition.Cond("DropletReady")
+	ConditionDropletExists  = condition.Cond("DigitaloceanDropletExists")
+	ConditionDropletReady   = condition.Cond("DigitaloceanDropletReady")
+	ConditionDropletUpdated = condition.Cond("DigitaloceanDropletUpdated")
 
-	ConditionKeyExists       = condition.Cond("KeyExists")
-	ConditionKeySecretExists = condition.Cond("KeySecretExists")
+	ConditionKeyExists  = condition.Cond("KeyExists")
+	ConditionKeyCreated = condition.Cond("DigitaloceanKeyCreated")
+
+	RetryDeleteKey     = retries.NewRetry("DeleteKey", 0)
+	RetryDeleteDroplet = retries.NewRetry("DeleteDroplet", 0)
 )
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -31,51 +35,19 @@ type Droplet struct {
 
 type DropletSpec struct {
 	// Name of the HobbyFarm machine that spawned this droplet
-	Machine string `json:"machine"`
+	Machine string  `json:"machine"`
+	Droplet v1.JSON `json:"droplet"`
+}
 
+// +k8s:deepcopy-gen=true
+
+type DropletCreateRequest struct {
 	godo.DropletCreateRequest
+	Image   DropletCreateImage    `json:"image"`
+	SSHKeys []DropletCreateSSHKey `json:"ssh_keys"`
 }
 
-// MarshalJSON This method exists to prevent json from calling godo.DropletCreateImage's MarshalJSON()
-// why? Because that method returns a scalar int or string (from the original struct{int, string})
-// which doesn't play nice with a kubernetes server that expects to store a json object, not a json scalar.
-// so we do some json merge trickery here so that the output json from this method
-// uses the "overridden" 'image' tag from our embedded struct instead of
-// the 'image' tag from godo.DropletCreateImage embedded in godo.DropletCreateRequest
-// see https://choly.ca/post/go-json-marshalling/
-//
-// The above also applies to godo.DropletCreateSSHKey
-func (d *DropletSpec) MarshalJSON() ([]byte, error) {
-	type alias DropletSpec
-
-	type SSHKey struct {
-		ID          int    `json:"id"`
-		Fingerprint string `json:"fingerprint"`
-	}
-
-	var keys = make([]SSHKey, len(d.SSHKeys))
-	for i, k := range d.SSHKeys {
-		keys[i] = SSHKey{
-			ID:          k.ID,
-			Fingerprint: k.Fingerprint,
-		}
-	}
-
-	var out = &struct {
-		Image   any `json:"image"`
-		SSHKeys any `json:"ssh_keys"`
-		*alias
-	}{
-		struct {
-			ID   int    `json:"id"`
-			Slug string `json:"slug"`
-		}{ID: d.Image.ID, Slug: d.Image.Slug},
-		keys,
-		(*alias)(d),
-	}
-
-	return json.Marshal(out)
-}
+// +k8s:deepcopy-gen=true
 
 type DropletCreateImage struct {
 	ID   int    `json:"id"`
@@ -84,9 +56,17 @@ type DropletCreateImage struct {
 
 // +k8s:deepcopy-gen=true
 
+type DropletCreateSSHKey struct {
+	ID          int    `json:"id"`
+	Fingerprint string `json:"fingerprint"`
+}
+
+// +k8s:deepcopy-gen=true
+
 type DropletStatus struct {
-	godo.Droplet
-	Conditions []genericcondition.GenericCondition
+	Droplet    v1.JSON                             `json:"droplet"`
+	Conditions []genericcondition.GenericCondition `json:"conditions"`
+	Retries    []retries.GenericRetry              `json:"retries"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -95,7 +75,7 @@ type DropletList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata"`
 
-	Items []Droplet
+	Items []Droplet `json:"items,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -113,19 +93,17 @@ type Key struct {
 type KeySpec struct {
 	// HF machine with which this key is associated
 	Machine string `json:"machine"`
+	Secret  string `json:"secret"`
 
-	godo.KeyCreateRequest
+	Key v1.JSON `json:"key"`
 }
 
 // +k8s:deepcopy-gen=true
 
 type KeyStatus struct {
-	// Name of the secret in which the key details are stored
-	Secret string `json:"secret"`
-
-	godo.Key
-
-	Conditions []genericcondition.GenericCondition
+	Key        v1.JSON                             `json:"key"`
+	Conditions []genericcondition.GenericCondition `json:"conditions"`
+	Retries    []retries.GenericRetry              `json:"retries"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

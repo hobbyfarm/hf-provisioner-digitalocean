@@ -13,6 +13,7 @@ func Setup() []crder.CRD {
 		c.AddVersion(v1alpha1.Version, v1alpha1.Droplet{}, func(cv *crder.Version) {
 			cv.IsStored(true).IsServed(true)
 			cv.WithStatus()
+			cv.WithPreserveUnknown()
 		})
 	})
 
@@ -21,6 +22,7 @@ func Setup() []crder.CRD {
 		c.AddVersion(v1alpha1.Version, v1alpha1.Key{}, func(cv *crder.Version) {
 			cv.IsStored(true).IsServed(true)
 			cv.WithStatus()
+			cv.WithPreserveUnknown()
 		})
 	})
 

@@ -75,8 +75,8 @@ github.com/dgrijalva/jwt-go v3.2.1-0.20200107013213-dc14462fd587+incompatible/go
 github.com/digitalocean/godo v1.99.0 h1:gUHO7n9bDaZFWvbzOum4bXE0/09ZuYA9yA8idQHX57E=
 github.com/digitalocean/godo v1.99.0/go.mod h1:SsS2oXo2rznfM/nORlZ/6JaUJZFhmKTib1YhopUc8NA=
 github.com/docopt/docopt-go v0.0.0-20180111231733-ee0de3bc6815/go.mod h1:WwZ+bS3ebgob9U8Nd0kOddGdZWjyMGR8Wziv+TBNwSE=
-github.com/ebauman/crder v0.0.17 h1:YoYZZCQzbgGL6tVnzzoHts8ZumKGTZE+eAfVYP6AFx0=
-github.com/ebauman/crder v0.0.17/go.mod h1:hBFgWb3ywEx5eq2rpI0GDIqU+xEsLXShKtfesQW2Yjk=
+github.com/ebauman/crder v0.2.0-rc0 h1:ExmUkPVrxXbc66mIfV/YmyTfP3GFlbqXDuRxVsZFCKU=
+github.com/ebauman/crder v0.2.0-rc0/go.mod h1:QJ0asWI2wg4FpyguZ+7SID6Wi9utqq/83xDXVHVdc9E=
 github.com/elazarl/goproxy v0.0.0-20180725130230-947c36da3153/go.mod h1:/Zj4wYkgs4iZTTu3o/KG3Itv/qCCa8VVMlb3i9OVuzc=
 github.com/emicklei/go-restful v0.0.0-20170410110728-ff4f55a20633/go.mod h1:otzb+WCGbkyDHkqmQmT5YD2WR4BBwUdeQoFo8l/7tVs=
 github.com/emicklei/go-restful v2.9.5+incompatible/go.mod h1:otzb+WCGbkyDHkqmQmT5YD2WR4BBwUdeQoFo8l/7tVs=

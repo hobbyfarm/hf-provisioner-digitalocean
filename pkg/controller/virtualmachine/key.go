@@ -8,9 +8,12 @@ import (
 	"github.com/ebauman/hf-provisioner-digitalocean/pkg/errors"
 	labels2 "github.com/ebauman/hf-provisioner-digitalocean/pkg/labels"
 	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/util/json"
 	kclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+// RequireKey not only ensures that the key has been created, but that
+// it is also created in DigitalOcean
 func RequireKey(next router.Handler) router.Handler {
 	return router.HandlerFunc(func(req router.Request, resp router.Response) error {
 		keyList := &v1alpha1.KeyList{}
@@ -27,6 +30,10 @@ func RequireKey(next router.Handler) router.Handler {
 
 		if len(keyList.Items) == 0 {
 			return nil
+		}
+
+		if v1alpha1.ConditionKeyCreated.GetStatus(keyList.Items[0]) != "true" {
+			return nil // only passthrough keys that are created in DO
 		}
 
 		return next.Handle(req, resp)
@@ -58,10 +65,17 @@ func KeyHandler(req router.Request, resp router.Response) error {
 	}
 	key.Labels[labels2.VirtualMachineLabel] = req.Object.GetName()
 	key.Spec.Machine = req.Object.GetName()
-	key.Spec.KeyCreateRequest = godo.KeyCreateRequest{
+	key.Spec.Secret = secret.Name
+
+	var kcr = godo.KeyCreateRequest{
 		Name:      name,
 		PublicKey: string(secret.Data["public_key"]),
 	}
+	out, err := json.Marshal(kcr)
+	if err != nil {
+		return err
+	}
+	key.Spec.Key.Raw = out
 
 	resp.Objects(key)
 
