@@ -28,6 +28,7 @@ func routes(r *router.Router) {
 
 	keyRouter.HandlerFunc(key.EnsureStatus)
 	keyRouter.Middleware(key.NotYetCreated).HandlerFunc(key.CreateKey)
+	keyRouter.Middleware(key.Created).HandlerFunc(key.WriteVM)
 	keyRouter.FinalizeFunc(key.EnsureDeletedFinalizer, key.EnsureDeleted)
 
 	dropletRouter := r.Type(&v1alpha1.Droplet{}).Namespace(namespace.Resolve())
