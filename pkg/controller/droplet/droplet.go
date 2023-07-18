@@ -91,6 +91,8 @@ func UpdateVMStatus(req router.Request, resp router.Response) error {
 		}
 	}
 
+	vm.Status.Hostname = droplet.Name // usually?
+
 	return req.Client.Status().Update(req.Ctx, vm)
 }
 
