@@ -8,6 +8,7 @@ import (
 	"github.com/ebauman/crder"
 	"github.com/ebauman/hf-provisioner-digitalocean/pkg/apis/provisioning.hobbyfarm.io/v1alpha1"
 	"github.com/ebauman/hf-provisioner-digitalocean/pkg/crd"
+	"github.com/ebauman/hf-provisioner-digitalocean/pkg/namespace"
 	v1 "github.com/hobbyfarm/gargantua/pkg/apis/hobbyfarm.io/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -32,6 +33,7 @@ func New() (*Controller, error) {
 
 	r, err := baaah.NewRouter("hf-provisioner-digitalocean", scheme, &baaah.Options{
 		RESTConfig: cfg,
+		Namespace:  namespace.Resolve(),
 	})
 
 	if err != nil {
