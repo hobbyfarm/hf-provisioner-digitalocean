@@ -17,10 +17,14 @@ in `main`.
 
 ## Installation
 
+Change `$NAMESPACE` to be the namespace in which your target installation of HobbyFarm is located.
+This provisioner is namespaced so that multiple can be installed in the same cluster, thus
+you must install this in the same naespace as the HobbyFarm you wish to "enable" with this functionality.
+
 ```
 git clone https://github.com/hobbyfarm/hf-provisioner-digitalocean
 cd hf-provisioner-digitalocean
-helm install hf-provisioner-digitalocean ./chart/hf-provisioner-digitalocean
+helm install hf-provisioner-digitalocean ./chart/hf-provisioner-digitalocean -n $NAMESPACE
 ```
 
 ## Usage
