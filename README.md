@@ -37,7 +37,7 @@ helm install hf-provisioner-digitalocean ./chart/hf-provisioner-digitalocean -n 
 spec:
   environment_specifics:
     region: nyc1 # any valid digitalocean region slug
-    token_secret: do_secret # a secret with key of 'token' and value
+    token-secret: do_secret # a secret with key of 'token' and value
     token: dop_v1_... # if you wanna put your secret in plaintext (dumb)
   template_mapping:
     your_template:
