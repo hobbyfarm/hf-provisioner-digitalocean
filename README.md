@@ -11,7 +11,7 @@ Alpha software
 1. HobbyFarm Installation
 
 As of this writing you need to be running a version of Gargantua that 
-tracks changes that are not yet on `main`. Use `ebauman/gargantua:pr-154`
+tracks changes that are not yet on `main`. Use `hobbyfarm/gargantua:v.3.0.1-rc0`
 for now, until the changes that allow this provider to function are
 in `main`.
 
@@ -29,7 +29,7 @@ helm install hf-provisioner-digitalocean ./chart/hf-provisioner-digitalocean -n 
 
 ## Usage
 
-1. Add a label to your Environment of `hobbyfarm.io/provisioner: digitalocean`
+1. Add an annotation to your Environment of `hobbyfarm.io/provisioner: digitalocean`
 2. Add the following required values to `environment_specifics` and 
 `template_mapping` on your Environment:
 ```yaml
