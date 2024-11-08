@@ -1,4 +1,4 @@
-FROM golang:1.20 AS build
+FROM golang:1.23 AS build
 
 COPY . /app
 
@@ -8,7 +8,7 @@ RUN go get -v
 
 RUN go build -v -o hf-provisioner-digitalocean
 
-FROM golang:1.20 AS run
+FROM golang:1.23 AS run
 
 COPY --from=build /app/hf-provisioner-digitalocean /hf-provisioner-digitalocean
 
