@@ -8,6 +8,7 @@ import (
 	"github.com/ebauman/crder"
 	"github.com/ebauman/hf-provisioner-digitalocean/pkg/apis/provisioning.hobbyfarm.io/v1alpha1"
 	"github.com/ebauman/hf-provisioner-digitalocean/pkg/crd"
+	"github.com/ebauman/hf-provisioner-digitalocean/pkg/log"
 	"github.com/ebauman/hf-provisioner-digitalocean/pkg/namespace"
 	v1 "github.com/hobbyfarm/gargantua/pkg/apis/hobbyfarm.io/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -27,19 +28,22 @@ func New() (*Controller, error) {
 
 	cfg, err := restconfig.New(scheme)
 
+	log.Debugf("adding types to scheme")
 	utilruntime.Must(v1alpha1.AddToScheme(scheme))
 	utilruntime.Must(v1.AddToScheme(scheme))
 	utilruntime.Must(corev1.AddToScheme(scheme))
 
-	r, err := baaah.NewRouter("hf-provisioner-digitalocean", scheme, &baaah.Options{
-		RESTConfig: cfg,
-		Namespace:  namespace.Resolve(),
+	r, err := baaah.NewRouter("hf-provisioner-digitalocean", &baaah.Options{
+		DefaultRESTConfig: cfg,
+		DefaultNamespace:  namespace.Resolve(),
+		Scheme:            scheme,
 	})
 
 	if err != nil {
 		return nil, err
 	}
 
+	log.Debugf("registering routes")
 	routes(r)
 
 	return &Controller{

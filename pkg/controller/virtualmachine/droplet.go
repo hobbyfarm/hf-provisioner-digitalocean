@@ -9,7 +9,9 @@ import (
 	"github.com/ebauman/hf-provisioner-digitalocean/pkg/errors"
 	labels2 "github.com/ebauman/hf-provisioner-digitalocean/pkg/labels"
 	"github.com/ebauman/hf-provisioner-digitalocean/pkg/parse"
+	"github.com/ebauman/hf-provisioner-digitalocean/pkg/tags"
 	v1 "github.com/hobbyfarm/gargantua/pkg/apis/hobbyfarm.io/v1"
+	"github.com/hobbyfarm/hf-provisioner-shared/instanceid"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/json"
 	kclient "sigs.k8s.io/controller-runtime/pkg/client"
@@ -41,7 +43,10 @@ func DropletHandler(req router.Request, resp router.Response) error {
 			},
 		}
 
-		dcr := buildDropletCreateRequest(name, obj, req)
+		dcr, err := buildDropletCreateRequest(name, obj, req)
+		if err != nil {
+			return err
+		}
 
 		dcr.Image = godo.DropletCreateImage{
 			Slug: config.ResolveConfigItem(obj, req, "image"),
@@ -89,7 +94,11 @@ func GetDroplet(req router.Request) (*v1alpha1.Droplet, error) {
 	return nil, errors.NewNotFoundError("could not find any droplets for virtualmachine %s", req.Object.GetName())
 }
 
-func buildDropletCreateRequest(name string, vm *v1.VirtualMachine, req router.Request) *godo.DropletCreateRequest {
+func buildDropletCreateRequest(name string, vm *v1.VirtualMachine, req router.Request) (*godo.DropletCreateRequest, error) {
+	instanceId, err := instanceid.GetOrCreateInstanceId(req.Ctx, req.Client)
+	if err != nil {
+		return nil, err
+	}
 	return &godo.DropletCreateRequest{
 		Name:              name,
 		Region:            config.ResolveConfigItem(vm, req, "region"),
@@ -99,5 +108,9 @@ func buildDropletCreateRequest(name string, vm *v1.VirtualMachine, req router.Re
 		PrivateNetworking: parse.ParseBoolOrFalse(config.ResolveConfigItem(vm, req, "private_networking")),
 		Monitoring:        parse.ParseBoolOrFalse(config.ResolveConfigItem(vm, req, "monitoring")),
 		UserData:          config.ResolveConfigItem(vm, req, "user_data"),
-	}
+		Tags: []string{
+			fmt.Sprintf(tags.DOInstanceIdPrefix + instanceId),
+			fmt.Sprintf(tags.DODropletNamePrefix + name),
+		},
+	}, nil
 }
