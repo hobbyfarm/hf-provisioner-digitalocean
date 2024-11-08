@@ -32,6 +32,7 @@ type Logger interface {
 	Debugf(format string, args ...interface{})
 }
 
+// SetLogger overrides the default logger
 func SetLogger(logger Logger) {
 	Infof = logger.Infof
 	Errorf = logger.Errorf
