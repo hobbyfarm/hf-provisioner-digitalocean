@@ -42,7 +42,7 @@ func main() {
 	for {
 		select {
 		case err := <-errCh:
-			logrus.Error(err)
+			log.Errorf(err.Error())
 		case <-ctx.Done():
 			return
 		}
